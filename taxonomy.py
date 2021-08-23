@@ -94,7 +94,8 @@ def esc(s):
 
 class Metric:
     def __init__(self, name, url=None, solved=False, notes="", scale=linear, target=None, target_source=None,
-                 parent=None, changeable=False, axis_label=None, target_label=None):
+                 parent=None, changeable=False, axis_label=None, target_label=None, performance_floor=None,
+                 performance_ceiling=None, atari=False):
         self.name = name
         self.measures = []
         self.solved = solved
@@ -103,6 +104,8 @@ class Metric:
         self.scale = scale
         self.target = target
         self.target_source = target_source # Source for human-level performance number
+        self.performance_floor = performance_floor # Minimum performance
+        self.performance_ceiling = performance_ceiling # maximum possible performance
         self.changeable = changeable # True if a metric changes over time
         self.graphed = False
         global metrics
@@ -115,6 +118,11 @@ class Metric:
         # primarily used by the table() method
         self.data_url = self.find_edit_url(3) # 3 is stack depth for a problem.metric() call
         self.data_path = None
+        self.frontier = []
+        self.human_scale_frontier = []
+        self.trend_type = {}
+        self.extrapolation = {}
+        self.atari = atari
 
     def __str__(self):
         solved = "SOLVED" if self.solved else "?" if not self.target else "not solved"
@@ -192,6 +200,20 @@ class Metric:
         </div>'''.format(esc(self.data_url), self.data_path)]
         html = u"".join(table_html + github_link)
         return html
+
+    def getFrontier(self, prioritize_value=True):
+        best_so_far = None
+        first = True
+        self.frontier = []
+        for data_point in sorted([[a.date, a.value] for a in self.measures]):
+            if first:
+                self.frontier.append({"date": data_point[0], "value": data_point[1]})
+                first = False
+            elif self.scale.improvement(self.frontier[-1]["value"], data_point[1]) > 0:
+                if data_point[0] <= self.frontier[-1]["date"] and prioritize_value:
+                    self.frontier[-1] = {"date": data_point[0], "value": data_point[1]}
+                else:
+                    self.frontier.append({"date": data_point[0], "value": data_point[1]})
 
     def graph(self, size=(7,5), scale=1.0, suppress_target=False, keep=False, reuse=None, title=None, llabel=None, fcol=None, pcol=None, tcol=None):
         "Spaghetti code graphing function."
@@ -326,8 +348,11 @@ except requests.ConnectionError:
 class Measurement:
     def __init__(self, d, value, name, url, algorithms=[], uncertainty=0, minval=None, maxval=None, opensource=False, replicated="",
                  papername=None, venue=None, min_date=None, max_date=None, algorithm_src_url=None, withdrawn=False, 
-                 not_directly_comparable=False, long_label=False, notes="", offset=None):
-        self.date = d
+                 not_directly_comparable=False, long_label=False, notes="", offset=None, year=None, force_d=None):
+        if force_d:
+            self.date = force_d
+        else:
+            self.date = d
         self.value = value
         assert isinstance(value, float) or isinstance(value, int), "Measurements on metrics need to be numbers"
         self.name = name
@@ -353,8 +378,17 @@ class Measurement:
         self.long_label = long_label
         self.algorithms = algorithms
         self.offset = offset
+        self.year = year # In case the year is outside the range for datetime.date
         self.notes = notes
-        arxiv_papername, arxiv_dates, arxiv_withdrawn = ade.get_paper_data(self.url)
+        try:
+            arxiv_papername, arxiv_dates, arxiv_withdrawn = ade.get_paper_data(self.url)
+            pass
+        except:
+            print("Error grabbing data from {url} for {measure}".format(url=self.url, measure=self.name))
+            arxiv_papername = "paper name not found"
+            arxiv_withdrawn = False
+            arxiv_dates = None
+
         self.withdrawn = withdrawn or arxiv_withdrawn 
         if "arxiv.org" in self.url and not offline:
             assert arxiv_dates, "Failed to extract arxiv dates for "+ self.url
@@ -364,7 +398,7 @@ class Measurement:
             
         global measurements
         measurements.add(self)
-    
+
     def determine_src_name(self):
         "Figure out the name of a prior paper this result is based on, if applicable"
         if self.algorithm_src_url:

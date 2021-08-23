@@ -5,7 +5,7 @@ from math import log
 # whether progress on some metric appears to be accelerating or decelerating.
 
 # Interface:
-#    improvement(score1, score2): retrns a consistent measure of how much better score2 is than score1
+#    improvement(score1, score2): returns a consistent measure of how much better score2 is than score1
 #    pseudolinear(score): returns a modified version of score where we would expect vaguely linear progress
 
 class Linear():
@@ -63,10 +63,10 @@ class ErrorRate:
     def improvement(self, score1, score2):
         # improvement is measured as a negative log of the error rate
         return log(score1) - log(score2)
-    def pseudolinear(self, score):
+    def pseudolinear(self, score, floor=.00001):
         # error rate 1 => 0
         # error rate 0 => infinity
-        return -log(score)
+        return -log(max(score, floor))
 error_rate = ErrorRate()
 
 # some problems have performance measured in bits per X (bits per character, bits per pixel, etc), 
@@ -92,9 +92,9 @@ class CorrectPercent:
     def improvement(self, score1, score2):
         return score2 - score1
     
-    def pseudolinear(self, score):
+    def pseudolinear(self, score, ceiling=99.99):
         from math import log
-        return -log(self.erate(score))
+        return -log(self.erate(min(score, ceiling)))
 
 correct_percent = CorrectPercent()
 
@@ -109,9 +109,9 @@ class BLEUScore:
     def improvement(self, score1, score2):
         return score2 - score1
     
-    def pseudolinear(self, score):
+    def pseudolinear(self, score, ceiling=49.98):
         from math import log
-        return -log(self.erate(score))
+        return -log(self.erate(min(score, ceiling)))
 
 bleu_score = BLEUScore()
 
@@ -126,9 +126,9 @@ class ErrorPercent:
     def improvement(self, score1, score2):
         return score1 - score2
     
-    def pseudolinear(self, score):
+    def pseudolinear(self, score, floor=.01):
         from math import log
-        return log(self.erate(score))
+        return -log(self.erate(max(score, floor)))
     
 error_percent = ErrorPercent()
 
