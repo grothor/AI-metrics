@@ -15,7 +15,7 @@ image_classification = Problem("Image classification", ["vision", "agi"])
 image_classification.add_subproblem(image_comprehension)
 vision.add_subproblem(image_classification)
 
-imagenet = image_classification.metric("Imagenet Image Recognition", "http://image-net.org", scale=error_rate, target=0.051, axis_label="Top-5 error rate")
+imagenet = image_classification.metric("Imagenet Image Recognition", "http://image-net.org", scale=error_rate, target=0.051, axis_label="Top-5 error rate", performance_floor=0.999, performance_ceiling=0)
 imagenet.notes = """
 Correctly label images from the Imagenet dataset. As of 2016, this includes:
  - Object localization for 1000 categories.
@@ -31,6 +31,7 @@ imagenet.measure(date(2012,10,13), 0.16422, "AlexNet / SuperVision",
 imagenet.measure(date(2013,11,14), 0.11743, "Clarifai","http://www.image-net.org/challenges/LSVRC/2013/results.php")
 imagenet.measure(date(2014,8,18), 0.07405, "VGG", "http://image-net.org/challenges/LSVRC/2014/index")
 imagenet.measure(date(2015,12,10), 0.03567, "MSRA", "http://image-net.org/challenges/LSVRC/2015/results", algorithms=["residual-networks"])
+imagenet.measure(date(2015,12,10), 0.03567, "MSRA", "http://image-net.org/challenges/LSVRC/2015/results")
 imagenet.measure(date(2016,9,26), 0.02991, "Trimps-Soushen", "http://image-net.org/challenges/LSVRC/2016/results")
 imagenet.measure(date(2017,7,21), 0.02251, "SE-ResNet152 / WMW", "http://image-net.org/challenges/LSVRC/2017/results")
 imagenet.measure(None, 0.03, "AmoebaNet-B", "https://arxiv.org/pdf/1811.06965.pdf")
@@ -70,7 +71,7 @@ vqa_real_mc.measure(date(2015,12,15), 61.97, "iBOWIMG baseline", url="https://ar
 vqa_real_oe.measure(None, 58.24, "SMem-VQA", url="https://arxiv.org/abs/1511.05234v2")
 
 # not so clear what the number in the SANv1 paper was...
-#vqa_real_oe.measure(None, 57.6, "SAN(2,CNN)", url="https://arxiv.org/abs/1511.02274v1")
+vqa_real_oe.measure(None, 57.6, "SAN(2,CNN)", url="https://arxiv.org/abs/1511.02274v1")
 vqa_real_oe.measure(None, 58.9, "SAN", url="https://arxiv.org/abs/1511.02274v2")
 
 vqa_real_oe.measure(None, 59.5, "CNN-RNN", url="https://arxiv.org/abs/1603.02814v1")

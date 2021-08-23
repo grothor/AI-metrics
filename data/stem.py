@@ -47,8 +47,8 @@ solve_constrained_technical_problems.add_subproblem(circuit_design)
 
 program_induction = Problem("Write computer programs from specifications")
 vaguely_constrained_technical_problems.add_subproblem(program_induction)
-card2code_mtg_acc = program_induction.metric("Card2Code MTG accuracy", url="https://github.com/deepmind/card2code", scale=correct_percent, target=100, target_label="Bug-free card implementation")
-card2code_hs_acc = program_induction.metric("Card2Code Hearthstone accuracy", url="https://github.com/deepmind/card2code", scale=correct_percent, target=100, target_label="Bug-free card implementation")
+card2code_mtg_acc = program_induction.metric("Card2Code MTG accuracy", url="https://github.com/deepmind/card2code", scale=correct_percent, target=99.99, target_label="Bug-free card implementation")
+card2code_hs_acc = program_induction.metric("Card2Code Hearthstone accuracy", url="https://github.com/deepmind/card2code", scale=correct_percent, target=99.99, target_label="Bug-free card implementation")
 
 card2code_mtg_acc.measure(None, 4.8, "LPN", url="https://arxiv.org/abs/1603.06744v1")
 card2code_hs_acc.measure(None, 6.1, "LPN", url="https://arxiv.org/abs/1603.06744v1")
@@ -64,7 +64,7 @@ program_induction.add_subproblem(understand_conditional_expressions)
 science_question_answering = Problem("Answering Science Exam Questions", ["science", "qa"])
 vaguely_constrained_technical_problems.add_subproblem(science_question_answering)
 
-ny_4_science = science_question_answering.metric("NY Regents 4th Grade Science Exams", url="http://www.nysedregents.org/Grade4/Science/home.html", scale=correct_percent, target=100,
+ny_4_science = science_question_answering.metric("NY Regents 4th Grade Science Exams", url="http://www.nysedregents.org/Grade4/Science/home.html", scale=correct_percent, target=99.99,
 target_label="Perfect score")
 ny_4_science.measure(None, 47.5, "Praline", url="https://pdfs.semanticscholar.org/478b/4a5123bd5fda98bb35e6317d7f3555fec97d.pdf", papername="Combining Retrieval, Statistics, and Inference to Answer Elementary Science Questions", venue="AAAI 2016", algorithm_src_url="http://aclweb.org/anthology/D15-1080", min_date=date(2015, 11, 17))
 ny_4_science.measure(None, 60.7, "PMI", "https://pdfs.semanticscholar.org/478b/4a5123bd5fda98bb35e6317d7f3555fec97d.pdf", papername="Combining Retrieval, Statistics, and Inference to Answer Elementary Science Questions", venue="AAAI 2016")
@@ -77,13 +77,13 @@ ny_4_science.measure(None, 61.5, "TableILP", "https://arxiv.org/pdf/1604.06076.p
 ny_4_science.measure(None, 69.0, "TableILP+IR+PMI", "https://arxiv.org/pdf/1604.06076.pdf")
 
 elementery_ndmc_acc = science_question_answering.metric("Elementery Non-Diagram Multiple Choice (NDMC) Science Exam accuracy", 
-    url="http://data.allenai.org/ai2-science-questions/", scale=correct_percent, target=100, target_label="Perfect Score")
+    url="http://data.allenai.org/ai2-science-questions/", scale=correct_percent, target=99.99, target_label="Perfect Score")
 
 elementery_dmc_acc = science_question_answering.metric("Elementery Diagram Multiple Choice (DMC) Science Exam accuracy", 
-    url="http://data.allenai.org/ai2-science-questions/", scale=correct_percent, target=100, target_label="Perfect Score")
+    url="http://data.allenai.org/ai2-science-questions/", scale=correct_percent, target=99.99, target_label="Perfect Score")
 
 ms_ndmc_acc = science_question_answering.metric("Middle School Non-Diagram Multiple Choice (NDMC) Science Exam accuracy", 
-    url="http://data.allenai.org/ai2-science-questions/", scale=correct_percent, target=100, target_label="Perfect Score")
+    url="http://data.allenai.org/ai2-science-questions/", scale=correct_percent, target=99.99, target_label="Perfect Score")
 
 ms_dmc_acc = science_question_answering.metric("Middle School Diagram Multiple Choice (DMC) Science Exam accuracy", 
-    url="http://data.allenai.org/ai2-science-questions/", scale=correct_percent, target=100, target_label="Perfect Score")
+    url="http://data.allenai.org/ai2-science-questions/", scale=correct_percent, target=99.99, target_label="Perfect Score")
